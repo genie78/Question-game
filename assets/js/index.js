@@ -3,26 +3,15 @@ var startButton = document.querySelector('.start-btn');
 var closeButton = document.querySelector('.close-btn');
 var question = document.querySelector(".question");
 var answersList  = [document.querySelector(".A"), document.querySelector(".B"), document.querySelector('.C')];
+var progressBar = document.getElementById('progress-bar');
+var progressBarText = document.querySelector('.progress-bar-text');
 
 // button answers 
 var buttonA = document.querySelector('.button-a');
 var buttonB = document.querySelector('.button-b');
 var buttonC = document.querySelector('.button-c');
 
-// main divs
-var gamePlayDiv = document.querySelector('.game-play-div');
-var questionDiv = document.querySelector('.question-div');
 
-const closePage = function (){
-    window.close();
-}
-closeButton.addEventListener('click', closePage);
-
-const seeQuestions = function() {
-    gamePlayDiv.remove();
-    questionDiv.style.visibility = 'visible';
-}
-startButton.addEventListener('click', seeQuestions);
 
 
 // question object
@@ -66,12 +55,68 @@ function createListOfQuestions (obj){
         listOfQuestions.push(i);
     }
 }
+
 var randomQuestion;
 function getRandomQuestion () {
-    randomQuestion = listOfQuestions[Math.floor(Math.random()*listOfQuestions.length)];
-    question.innerHTML = questionObj[randomQuestion][0];
-    writeAnswers(randomQuestion);
+    if (listOfQuestions.length == 0){
+        createListOfQuestions(questionObj);
+        questionDiv.style.visibility = 'hidden';
+        gamePlayDiv.style.display = 'block';
+        progressBarText.innerHTML = "Total Point " + progressBar.style.width;
+        
+    }else {
+        randomQuestion = listOfQuestions[Math.floor(Math.random()*listOfQuestions.length)];
+        question.innerHTML = questionObj[randomQuestion][0];
+        writeAnswers(randomQuestion);
+    }
+    listOfQuestions.splice(listOfQuestions.indexOf(randomQuestion), 1);
 }
 
 createListOfQuestions(questionObj);
 getRandomQuestion();
+
+function checkVariant(n){
+    if (answersList[n].textContent == questionObj[randomQuestion][1]){
+        progressBar.style.width = (parseInt(progressBar.style.width.substring(0,2)) + 20) + '%';
+        alert('It was right');
+    }else {
+        alert('This is wrong');
+    }
+    getRandomQuestion()
+}
+
+function checkVariantA(){
+    checkVariant(0);
+}
+
+function checkVariantB(){
+    checkVariant(1);
+}
+
+function checkVariantC(){
+    checkVariant(2);
+}
+
+buttonA.addEventListener('click', checkVariantA);
+buttonB.addEventListener('click', checkVariantB);
+buttonC.addEventListener('click', checkVariantC);
+
+
+
+
+// main divs
+var gamePlayDiv = document.querySelector('.game-play-div');
+var questionDiv = document.querySelector('.question-div');
+
+const closePage = function (){
+    window.close();
+}
+closeButton.addEventListener('click', closePage);
+
+const seeQuestions = function() {
+    gamePlayDiv.style.display = 'none';
+    questionDiv.style.visibility = 'visible';
+    progressBar.style.width = '0';
+    console.log(listOfQuestions);
+}
+startButton.addEventListener('click', seeQuestions);
